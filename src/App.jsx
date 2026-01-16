@@ -16,6 +16,7 @@ import {
 } from "./components/LoadingSkeletons";
 
 import { normalizeError } from "./utils/normalizeError";
+import { Analytics } from "@vercel/analytics/react";
 
 function App() {
   const formatDate = (d) => d.toISOString().slice(0, 10);
@@ -228,6 +229,7 @@ function App() {
           </>
         )}
       </div>
+      <Analytics />
     </div>
   );
 }
