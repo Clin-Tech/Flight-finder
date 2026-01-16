@@ -1,16 +1,61 @@
-# React + Vite
+# FlightFinder ✈️ (Amadeus + Vite + Vercel)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A lightweight flight search UI that calls **Amadeus Self-Service APIs** through **Vercel Serverless Functions**, then visualizes results with filters, price distribution, and a flight details modal.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Live Demo
+- Deployed URL: https://spotter-flight-search-engine.vercel.app
+- Loom walkthrough: 
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
+- **Flight search** (one-way or return)
+- **Airport selection** (IATA codes via `AIRPORTS` dataset)
+- **Filters**
+  - Price range slider
+  - Stops (nonstop / 1 stop / 2 stops)
+  - Airline selection
+- **Price distribution graph** (Recharts)
+- **Flight details modal** (click a flight card)
+- **Loading skeletons**
+- **Better error UI** (friendly message + retry)
+- **Empty state content** before first search
+- **Vercel Analytics** (React entry)
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Tech Stack
+- **Frontend:** React + Vite, Tailwind CSS, Material UI (MUI)
+- **Charts:** Recharts
+- **Icons:** lucide-react
+- **HTTP:** axios
+- **Backend (serverless):** Vercel Functions (`/api/*`)
+- **Flight data:** Amadeus Self-Service APIs (Test environment)
+
+---
+
+## Project Structure (high level)
+```txt
+.
+├─ api/
+│  ├─ _token.js              # OAuth token fetch + in-memory cache
+│  ├─ flights/
+│  │  └─ search.js           # Calls Amadeus flight offers endpoint
+│  └─ locations/
+│     └─ search.js           # Airport/city search endpoint
+├─ src/
+│  ├─ api/
+│  │  └─ amadeus.js          # client calls to /api/flights/search
+│  ├─ components/
+│  │  ├─ SearchForm.jsx
+│  │  ├─ FlightList.jsx
+│  │  ├─ FlightDetailsModal.jsx
+│  │  ├─ ErrorBanner.jsx
+│  │  ├─ EmptyState.jsx
+│  │  └─ LoadingSkeletons.jsx
+│  ├─ data/
+│  │  └─ airports.js         
+│  └─ App.jsx
+└─ README.md
