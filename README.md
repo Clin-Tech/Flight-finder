@@ -6,7 +6,7 @@ A lightweight flight search UI that calls **Amadeus Self-Service APIs** through 
 
 ## Live Demo
 - Deployed URL: https://spotter-flight-search-engine.vercel.app
-- Loom walkthrough: 
+- Loom walkthrough: https://www.loom.com/share/c6b51c50d24744f9a62c0f62726bfe1f
 
 ---
 
