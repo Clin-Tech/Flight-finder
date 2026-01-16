@@ -1,8 +1,16 @@
 import { Plane, Clock } from "lucide-react";
 
-const FlightCard = ({ flight }) => {
+const FlightCard = ({ flight, onSelect, onSelectCta }) => {
   return (
-    <div className="flight-card">
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => onSelect?.(flight)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") onSelect?.(flight);
+      }}
+      className="flight-card w-full text-left hover:shadow-lg transition-shadow cursor-pointer"
+    >
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-3">
@@ -61,7 +69,15 @@ const FlightCard = ({ flight }) => {
             </p>
             <p className="text-sm text-gray-500">{flight.currency}</p>
           </div>
-          <button className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors whitespace-nowrap">
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectCta?.(flight);
+            }}
+            className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors whitespace-nowrap"
+          >
             Select
           </button>
         </div>
@@ -70,7 +86,7 @@ const FlightCard = ({ flight }) => {
   );
 };
 
-const FlightList = ({ flights }) => {
+const FlightList = ({ flights, onSelectFlight, onSelectCta }) => {
   if (flights.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-md p-12 text-center">
@@ -88,7 +104,12 @@ const FlightList = ({ flights }) => {
   return (
     <div className="space-y-4">
       {flights.map((flight) => (
-        <FlightCard key={flight.id} flight={flight} />
+        <FlightCard
+          key={flight.id}
+          flight={flight}
+          onSelect={onSelectFlight}
+          onSelectCta={onSelectCta}
+        />
       ))}
     </div>
   );

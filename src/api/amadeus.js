@@ -13,7 +13,6 @@ export const searchFlights = async ({
   return res.data.data || [];
 };
 
-// (keep your parseFlightOffer + getAirlineName as-is for now)
 export const parseFlightOffer = (offer) => {
   const firstSegment = offer.itineraries[0].segments[0];
   const lastSegment =
@@ -27,7 +26,7 @@ export const parseFlightOffer = (offer) => {
     flightNumber: `${firstSegment.carrierCode}${firstSegment.number}`,
     origin: firstSegment.departure.iataCode,
     destination: lastSegment.arrival.iataCode,
-    departAt: firstSegment.departure.at, // add raw time for better charting
+    departAt: firstSegment.departure.at,
     arrivalAt: lastSegment.arrival.at,
     departureTime: new Date(firstSegment.departure.at).toLocaleTimeString(
       "en-US",

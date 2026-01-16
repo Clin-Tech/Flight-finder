@@ -1,125 +1,126 @@
-import { Search, MapPin, Calendar, Users } from "lucide-react";
+import { Search, Calendar, Users } from "lucide-react";
+import AirportAutocomplete from "./AirportAutocomplete";
+
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import Button from "@mui/material/Button";
+
+const todayISO = () => new Date().toISOString().split("T")[0];
 
 const SearchForm = ({ searchParams, setSearchParams, onSearch, loading }) => {
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
         <div className="lg:col-span-1">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            From
-          </label>
-          <div className="relative">
-            <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              value={searchParams.origin}
-              onChange={(e) =>
-                setSearchParams({
-                  ...searchParams,
-                  origin: e.target.value.toUpperCase(),
-                })
-              }
-              className="input-field pl-10"
-              placeholder="JFK"
-              maxLength={3}
-            />
-          </div>
+          <AirportAutocomplete
+            label="From"
+            placeholder="Search city or airport..."
+            value={searchParams.origin}
+            onChange={(iata) =>
+              setSearchParams((p) => ({ ...p, origin: iata }))
+            }
+          />
         </div>
 
         <div className="lg:col-span-1">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            To
-          </label>
-          <div className="relative">
-            <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              value={searchParams.destination}
-              onChange={(e) =>
-                setSearchParams({
-                  ...searchParams,
-                  destination: e.target.value.toUpperCase(),
-                })
-              }
-              className="input-field pl-10"
-              placeholder="LAX"
-              maxLength={3}
-            />
-          </div>
+          <AirportAutocomplete
+            label="To"
+            placeholder="Search city or airport..."
+            value={searchParams.destination}
+            onChange={(iata) =>
+              setSearchParams((p) => ({ ...p, destination: iata }))
+            }
+          />
         </div>
 
         <div className="lg:col-span-1">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Departure
-          </label>
-          <div className="relative">
-            <Calendar className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-            <input
-              type="date"
-              value={searchParams.departureDate}
-              onChange={(e) =>
-                setSearchParams({
-                  ...searchParams,
-                  departureDate: e.target.value,
-                })
-              }
-              className="input-field pl-10"
-              min={new Date().toISOString().split("T")[0]}
-            />
-          </div>
+          <TextField
+            label="Departure"
+            type="date"
+            size="small"
+            fullWidth
+            value={searchParams.departureDate}
+            onChange={(e) =>
+              setSearchParams((p) => ({ ...p, departureDate: e.target.value }))
+            }
+            InputLabelProps={{ shrink: true }}
+            inputProps={{ min: todayISO() }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Calendar className="w-4 h-4 text-gray-400" />
+                </InputAdornment>
+              ),
+            }}
+          />
         </div>
 
         <div className="lg:col-span-1">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Return
-          </label>
-          <div className="relative">
-            <Calendar className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-            <input
-              type="date"
-              value={searchParams.returnDate}
-              onChange={(e) =>
-                setSearchParams({ ...searchParams, returnDate: e.target.value })
-              }
-              className="input-field pl-10"
-              min={searchParams.departureDate}
-            />
-          </div>
+          <TextField
+            label="Return"
+            type="date"
+            size="small"
+            fullWidth
+            value={searchParams.returnDate}
+            onChange={(e) =>
+              setSearchParams((p) => ({ ...p, returnDate: e.target.value }))
+            }
+            InputLabelProps={{ shrink: true }}
+            inputProps={{ min: searchParams.departureDate || todayISO() }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Calendar className="w-4 h-4 text-gray-400" />
+                </InputAdornment>
+              ),
+            }}
+          />
         </div>
 
         <div className="lg:col-span-1">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Passengers
-          </label>
-          <div className="relative">
-            <Users className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-            <input
-              type="number"
-              min="1"
-              max="9"
-              value={searchParams.passengers}
-              onChange={(e) =>
-                setSearchParams({
-                  ...searchParams,
-                  passengers: parseInt(e.target.value) || 1,
-                })
-              }
-              className="input-field pl-10"
-            />
-          </div>
+          <TextField
+            label="Passengers"
+            type="number"
+            size="small"
+            fullWidth
+            value={searchParams.passengers}
+            onChange={(e) =>
+              setSearchParams((p) => ({
+                ...p,
+                passengers: Math.max(
+                  1,
+                  Math.min(9, Number(e.target.value) || 1)
+                ),
+              }))
+            }
+            inputProps={{ min: 1, max: 9 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Users className="w-4 h-4 text-gray-400" />
+                </InputAdornment>
+              ),
+            }}
+          />
         </div>
 
         <div className="lg:col-span-1 flex items-end">
-          <button
+          <Button
             onClick={onSearch}
             disabled={
               loading || !searchParams.origin || !searchParams.destination
             }
-            className="btn-primary w-full flex items-center justify-center gap-2"
+            fullWidth
+            variant="contained"
+            startIcon={<Search className="w-5 h-5" />}
+            sx={{
+              textTransform: "none",
+              borderRadius: 2,
+              py: 1.2,
+            }}
           >
-            <Search className="w-5 h-5" />
             {loading ? "Searching..." : "Search Flights"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

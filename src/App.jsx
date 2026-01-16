@@ -6,6 +6,17 @@ import FilterPanel from "./components/FilterPanel";
 import FlightList from "./components/FlightList";
 import { searchFlights, parseFlightOffer, getAirlineName } from "./api/amadeus";
 
+import ErrorBanner from "./components/ErrorBanner";
+import EmptyState from "./components/EmptyState";
+import FlightDetailsModal from "./components/FlightDetailsModal";
+import {
+  PriceGraphSkeleton,
+  FilterPanelSkeleton,
+  FlightListSkeleton,
+} from "./components/LoadingSkeletons";
+
+import { normalizeError } from "./utils/normalizeError";
+
 function App() {
   const formatDate = (d) => d.toISOString().slice(0, 10);
   const addDays = (n) => {
@@ -15,11 +26,11 @@ function App() {
   };
 
   const [searchParams, setSearchParams] = useState({
-    origin: "JFK",
-    destination: "LAX",
+    origin: "",
+    destination: "",
     departureDate: formatDate(addDays(14)),
     returnDate: formatDate(addDays(21)),
-    passengers: 1,
+    passengers: 0,
   });
 
   const [filters, setFilters] = useState({
@@ -33,6 +44,8 @@ function App() {
   const [hasSearched, setHasSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedFlight, setSelectedFlight] = useState(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   const handleSearch = useCallback(async () => {
     if (
@@ -75,7 +88,7 @@ function App() {
       setFlights(parsedFlights);
       setHasSearched(true);
 
-      const prices = parsedFlights.map((f) => f.price);
+      const prices = parsedFlights?.map((f) => f.price);
       const minPrice = Math.min(...prices);
       const maxPrice = Math.max(...prices);
 
@@ -86,10 +99,17 @@ function App() {
       }));
     } catch (err) {
       console.error("Search error:", err);
-      setError(
-        err.response.data.errors.detail ||
-          "Failed to search flights. Please check your API credentials."
-      );
+      const e = normalizeError(err);
+
+      if (e.status === 401) {
+        setError("Auth failed (401). Check your Amadeus credentials / token.");
+      } else if (e.status === 429) {
+        setError("Rate limited (429). Pause 10–20s and try again.");
+      } else {
+        setError(e.message || "Failed to search flights.");
+      }
+
+      setHasSearched(true);
     } finally {
       setLoading(false);
     }
@@ -150,12 +170,30 @@ function App() {
         />
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
-            {error}
-          </div>
+          <ErrorBanner
+            title="Couldn’t complete search"
+            message={error}
+            onRetry={handleSearch}
+          />
         )}
 
-        {hasSearched && !error && (
+        {!hasSearched && !loading && !error && <EmptyState />}
+
+        {loading && (
+          <>
+            <PriceGraphSkeleton />
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              <div className="lg:col-span-1">
+                <FilterPanelSkeleton />
+              </div>
+              <div className="lg:col-span-3">
+                <FlightListSkeleton count={6} />
+              </div>
+            </div>
+          </>
+        )}
+
+        {hasSearched && !loading && !error && (
           <>
             <PriceGraph
               data={priceGraphData}
@@ -173,9 +211,20 @@ function App() {
               </div>
 
               <div className="lg:col-span-3">
-                <FlightList flights={filteredFlights} />
+                <FlightList
+                  flights={filteredFlights}
+                  onSelectFlight={(flight) => {
+                    setSelectedFlight(flight);
+                    setDetailsOpen(true);
+                  }}
+                />
               </div>
             </div>
+            <FlightDetailsModal
+              open={detailsOpen}
+              onClose={() => setDetailsOpen(false)}
+              flight={selectedFlight}
+            />
           </>
         )}
       </div>
