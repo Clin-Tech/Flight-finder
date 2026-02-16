@@ -1,5 +1,4 @@
 import { useState, useMemo, useCallback } from "react";
-import { Plane } from "lucide-react";
 import SearchForm from "./components/SearchForm";
 import PriceGraph from "./components/PriceGraph";
 import FilterPanel from "./components/FilterPanel";
@@ -17,6 +16,17 @@ import {
 
 import { normalizeError } from "./utils/normalizeError";
 import { Analytics } from "@vercel/analytics/react";
+import { Reveal } from "./hooks/useScrollReveal";
+
+import Navbar from "./components/Navbar";
+import Hero from "./components/Hero";
+import Stats from "./components/Stats";
+import HowItWorks from "./components/HowItWorks";
+import Features from "./components/Features";
+import Destinations from "./components/Destinations";
+import Testimonials from "./components/Testimonials";
+import Newsletter from "./components/Newsletter";
+import Footer from "./components/Footer";
 
 function App() {
   const formatDate = (d) => d.toISOString().slice(0, 10);
@@ -105,7 +115,7 @@ function App() {
       if (e.status === 401) {
         setError("Auth failed (401). Check your Amadeus credentials / token.");
       } else if (e.status === 429) {
-        setError("Rate limited (429). Pause 10–20s and try again.");
+        setError("Rate limited (429). Pause 10-20s and try again.");
       } else {
         setError(e.message || "Failed to search flights.");
       }
@@ -152,83 +162,122 @@ function App() {
   }, [flights]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center gap-3">
-            <Plane className="w-8 h-8 text-indigo-600" />
-            <h1 className="text-2xl font-bold text-gray-900">FlightFinder</h1>
-          </div>
+    <div className="min-h-screen bg-white">
+      {/* Navigation */}
+      <Navbar />
+
+      {/* Hero */}
+      <Hero />
+
+      {/* Stats */}
+      <Stats />
+
+      {/* How It Works */}
+      <HowItWorks />
+
+      {/* Features */}
+      <Features />
+
+      {/* Search Section */}
+      <section id="search" className="section-padding bg-gray-50/50 mesh-gradient relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Reveal>
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-midnight-900/5 text-midnight-700 text-sm font-medium mb-4">
+                Live Search
+              </div>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-midnight-900 mb-4">
+                Search flights <span className="gradient-text">right now</span>
+              </h2>
+              <p className="text-gray-500 text-lg max-w-2xl mx-auto">
+                Real-time prices from the Amadeus GDS. Compare, filter, and find
+                your perfect flight.
+              </p>
+            </div>
+          </Reveal>
+
+          <Reveal delay={100}>
+            <SearchForm
+              searchParams={searchParams}
+              setSearchParams={setSearchParams}
+              onSearch={handleSearch}
+              loading={loading}
+            />
+          </Reveal>
+
+          {error && (
+            <ErrorBanner
+              title="Couldn't complete search"
+              message={error}
+              onRetry={handleSearch}
+            />
+          )}
+
+          {!hasSearched && !loading && !error && <EmptyState />}
+
+          {loading && (
+            <>
+              <PriceGraphSkeleton />
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div className="lg:col-span-1">
+                  <FilterPanelSkeleton />
+                </div>
+                <div className="lg:col-span-3">
+                  <FlightListSkeleton count={6} />
+                </div>
+              </div>
+            </>
+          )}
+
+          {hasSearched && !loading && !error && (
+            <>
+              <PriceGraph
+                data={priceGraphData}
+                flightCount={filteredFlights.length}
+              />
+
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div className="lg:col-span-1">
+                  <FilterPanel
+                    filters={filters}
+                    setFilters={setFilters}
+                    airlines={airlines}
+                    maxPrice={filters.maxPrice}
+                  />
+                </div>
+
+                <div className="lg:col-span-3">
+                  <FlightList
+                    flights={filteredFlights}
+                    onSelectFlight={(flight) => {
+                      setSelectedFlight(flight);
+                      setDetailsOpen(true);
+                    }}
+                  />
+                </div>
+              </div>
+              <FlightDetailsModal
+                open={detailsOpen}
+                onClose={() => setDetailsOpen(false)}
+                flight={selectedFlight}
+              />
+            </>
+          )}
         </div>
-      </header>
+      </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <SearchForm
-          searchParams={searchParams}
-          setSearchParams={setSearchParams}
-          onSearch={handleSearch}
-          loading={loading}
-        />
+      {/* Destinations */}
+      <Destinations />
 
-        {error && (
-          <ErrorBanner
-            title="Couldn’t complete search"
-            message={error}
-            onRetry={handleSearch}
-          />
-        )}
+      {/* Testimonials */}
+      <Testimonials />
 
-        {!hasSearched && !loading && !error && <EmptyState />}
+      {/* Newsletter CTA */}
+      <Newsletter />
 
-        {loading && (
-          <>
-            <PriceGraphSkeleton />
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              <div className="lg:col-span-1">
-                <FilterPanelSkeleton />
-              </div>
-              <div className="lg:col-span-3">
-                <FlightListSkeleton count={6} />
-              </div>
-            </div>
-          </>
-        )}
+      {/* Footer */}
+      <Footer />
 
-        {hasSearched && !loading && !error && (
-          <>
-            <PriceGraph
-              data={priceGraphData}
-              flightCount={filteredFlights.length}
-            />
-
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              <div className="lg:col-span-1">
-                <FilterPanel
-                  filters={filters}
-                  setFilters={setFilters}
-                  airlines={airlines}
-                  maxPrice={filters.maxPrice}
-                />
-              </div>
-
-              <div className="lg:col-span-3">
-                <FlightList
-                  flights={filteredFlights}
-                  onSelectFlight={(flight) => {
-                    setSelectedFlight(flight);
-                    setDetailsOpen(true);
-                  }}
-                />
-              </div>
-            </div>
-            <FlightDetailsModal
-              open={detailsOpen}
-              onClose={() => setDetailsOpen(false)}
-              flight={selectedFlight}
-            />
-          </>
-        )}
-      </div>
       <Analytics />
     </div>
   );
