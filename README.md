@@ -1,4 +1,4 @@
-# FlightFinder ✈️ (Amadeus + Vite + Vercel)
+# SkyFare ✈️ (Amadeus + Vite + Vercel)
 
 A lightweight flight search UI that calls **Amadeus Self-Service APIs** through **Vercel Serverless Functions**, then visualizes results with filters, price distribution, and a flight details modal.
 

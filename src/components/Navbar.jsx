@@ -62,7 +62,7 @@ export default function Navbar() {
                 scrolled ? "text-midnight-900" : "text-white"
               }`}
             >
-              FlightFinder
+              SkyFare
             </span>
           </a>
 

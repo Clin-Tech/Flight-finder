@@ -65,7 +65,7 @@ export default function Features() {
         <Reveal>
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-midnight-900/5 text-midnight-700 text-sm font-medium mb-4">
-              Why FlightFinder
+              Why SkyFare
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-midnight-900 mb-4">
               Everything you need,

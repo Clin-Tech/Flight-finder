@@ -72,7 +72,7 @@ export default function Footer() {
                 <Plane className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-display font-bold text-white tracking-tight">
-                FlightFinder
+                SkyFare
               </span>
             </div>
             <p className="text-white/30 text-sm leading-relaxed max-w-xs">
@@ -110,7 +110,7 @@ export default function Footer() {
         {/* Bottom section */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-white/25">
-            &copy; {new Date().getFullYear()} FlightFinder. All rights reserved.
+            &copy; {new Date().getFullYear()} SkyFare. All rights reserved.
           </p>
 
           {/* Social links */}

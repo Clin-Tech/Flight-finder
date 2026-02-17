@@ -68,7 +68,7 @@ export default function Testimonials() {
             </h2>
             <p className="text-gray-500 text-lg max-w-2xl mx-auto">
               Join thousands of travelers who found their perfect flights with
-              FlightFinder.
+              SkyFare.
             </p>
           </div>
         </Reveal>
